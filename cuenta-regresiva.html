@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuenta atrás</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&display=swap');
+
+  :root{
+    --night:#161B33;
+    --night-2:#1F2545;
+    --gold:#E8B872;
+    --gold-dim:#8C7248;
+    --rose:#E88C7D;
+    --paper:#F7F2E9;
+    --paper-dim:#E4DCC9;
+    --text-soft:#C7C6DE;
+    --text-faint:#7F7E9E;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(232,184,114,0.10), transparent 55%),
+      radial-gradient(ellipse at 90% 0%, rgba(232,140,125,0.10), transparent 50%),
+      var(--night);
+    font-family:'Work Sans', sans-serif;
+    color:var(--paper);
+    padding:56px 20px 80px;
+  }
+
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+  }
+
+  .eyebrow{
+    text-align:center;
+    font-size:13px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    margin-bottom:10px;
+  }
+
+  h1{
+    text-align:center;
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(28px, 5vw, 42px);
+    margin:0 0 4px;
+    color:var(--paper);
+  }
+
+  .subline{
+    text-align:center;
+    font-size:15px;
+    color:var(--text-soft);
+    margin-bottom:44px;
+  }
+
+  /* ---- countdown ---- */
+  .countdown{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:10px;
+    margin-bottom:20px;
+  }
+
+  .unit{
+    background:var(--night-2);
+    border:1px solid rgba(232,184,114,0.18);
+    border-radius:14px;
+    padding:20px 8px 16px;
+    text-align:center;
+  }
+
+  .unit .num{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(30px, 7vw, 46px);
+    color:var(--gold);
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .unit .lbl{
+    margin-top:8px;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+  }
+
+  .arrived{
+    text-align:center;
+    font-family:'Fraunces', serif;
+    font-size:clamp(26px, 6vw, 38px);
+    color:var(--gold);
+    padding:36px 0;
+  }
+
+  .target-note{
+    text-align:center;
+    font-size:13px;
+    color:var(--text-faint);
+    margin-bottom:56px;
+  }
+
+  /* ---- calendar ---- */
+  .cal-heading{
+    text-align:center;
+    font-family:'Fraunces', serif;
+    font-size:20px;
+    font-weight:500;
+    color:var(--paper);
+    margin-bottom:4px;
+  }
+
+  .cal-sub{
+    text-align:center;
+    font-size:13px;
+    color:var(--text-faint);
+    margin-bottom:24px;
+  }
+
+  .month-block{
+    margin-bottom:28px;
+  }
+
+  .month-label{
+    font-size:13px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--gold-dim);
+    margin-bottom:10px;
+    padding-left:4px;
+  }
+
+  .grid{
+    background:var(--paper);
+    border-radius:16px;
+    padding:16px;
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    gap:6px;
+  }
+
+  .dow{
+    text-align:center;
+    font-size:10px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:#9C9583;
+    padding-bottom:4px;
+  }
+
+  .day{
+    position:relative;
+    aspect-ratio:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:9px;
+    font-size:13px;
+    font-weight:500;
+    color:#3B3627;
+  }
+
+  .day.empty{visibility:hidden;}
+
+  .day.past{
+    color:#B7AF98;
+  }
+
+  .day.past::before,
+  .day.past::after{
+    content:'';
+    position:absolute;
+    width:70%;
+    height:2px;
+    background:var(--rose);
+    opacity:0.75;
+    border-radius:2px;
+  }
+  .day.past::before{ transform:rotate(45deg); }
+  .day.past::after{ transform:rotate(-45deg); }
+
+  .day.today{
+    background:var(--night);
+    color:var(--gold);
+    font-weight:600;
+    box-shadow:0 0 0 2px var(--gold) inset;
+  }
+
+  .day.target{
+    background:var(--rose);
+    color:#4A1B0C;
+    font-weight:600;
+  }
+
+  .day.future{
+    background:var(--paper-dim);
+  }
+
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--text-faint);
+    margin-top:40px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow">Faltan</p>
+    <h1 id="headline">para el 6 de septiembre</h1>
+    <p class="subline">6 de septiembre de 2026 · 23:00 · hora de Italia</p>
+
+    <div id="countdown-area"></div>
+    <p class="target-note">La cuenta se calcula siempre en hora de Italia, sin importar dónde la abras.</p>
+
+    <p class="cal-heading">Los días, tachados uno a uno</p>
+    <p class="cal-sub" id="days-left-note"></p>
+
+    <div id="calendar"></div>
+
+    <footer>Hecho para los dos.</footer>
+  </div>
+
+<script>
+  // Fecha objetivo: 6 sept 2026, 23:00 hora de Italia (CEST = UTC+2 en esa fecha)
+  const TARGET = new Date('2026-09-06T21:00:00Z');
+
+  const countdownArea = document.getElementById('countdown-area');
+  const headline = document.getElementById('headline');
+
+  function renderCountdown(){
+    const now = new Date();
+    const diff = TARGET - now;
+
+    if(diff <= 0){
+      headline.textContent = 'ya llegó';
+      countdownArea.innerHTML = '<div class="arrived">Es hoy 🤍</div>';
+      return;
+    }
+
+    headline.textContent = 'para el 6 de septiembre';
+
+    const s = Math.floor(diff / 1000);
+    const days = Math.floor(s / 86400);
+    const hours = Math.floor((s % 86400) / 3600);
+    const mins = Math.floor((s % 3600) / 60);
+    const secs = s % 60;
+
+    countdownArea.innerHTML = `
+      <div class="countdown">
+        <div class="unit"><div class="num">${days}</div><div class="lbl">días</div></div>
+        <div class="unit"><div class="num">${String(hours).padStart(2,'0')}</div><div class="lbl">horas</div></div>
+        <div class="unit"><div class="num">${String(mins).padStart(2,'0')}</div><div class="lbl">min</div></div>
+        <div class="unit"><div class="num">${String(secs).padStart(2,'0')}</div><div class="lbl">seg</div></div>
+      </div>
+    `;
+  }
+
+  renderCountdown();
+  setInterval(renderCountdown, 1000);
+
+  // ---- Calendario ----
+  const DOW = ['L','M','X','J','V','S','D'];
+  const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+  function ymd(d){
+    return d.getFullYear() + '-' + String(d.getMonth()).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function buildCalendar(){
+    const container = document.getElementById('calendar');
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    const target = new Date(2026, 8, 6); // 6 de septiembre de 2026
+    target.setHours(0,0,0,0);
+
+    const todayKey = ymd(today);
+    const targetKey = ymd(target);
+
+    // Determinar rango de meses a mostrar
+    const startMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endMonth = new Date(target.getFullYear(), target.getMonth(), 1);
+
+    let daysLeft = Math.max(0, Math.round((target - today) / 86400000));
+    document.getElementById('days-left-note').textContent =
+      daysLeft === 0 ? 'hoy es el día' : `${daysLeft} día${daysLeft === 1 ? '' : 's'} por delante`;
+
+    let cursor = new Date(startMonth);
+    while(cursor <= endMonth){
+      const y = cursor.getFullYear();
+      const m = cursor.getMonth();
+
+      const block = document.createElement('div');
+      block.className = 'month-block';
+
+      const label = document.createElement('div');
+      label.className = 'month-label';
+      label.textContent = `${MESES[m]} ${y}`;
+      block.appendChild(label);
+
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+
+      DOW.forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'dow';
+        el.textContent = d;
+        grid.appendChild(el);
+      });
+
+      const firstDay = new Date(y, m, 1);
+      const lastDay = new Date(y, m + 1, 0);
+      // lunes = 0 ... domingo = 6
+      let startOffset = (firstDay.getDay() + 6) % 7;
+
+      for(let i = 0; i < startOffset; i++){
+        const el = document.createElement('div');
+        el.className = 'day empty';
+        grid.appendChild(el);
+      }
+
+      for(let day = 1; day <= lastDay.getDate(); day++){
+        const cellDate = new Date(y, m, day);
+        const key = ymd(cellDate);
+        const el = document.createElement('div');
+        el.className = 'day';
+        el.textContent = day;
+
+        if(key === targetKey){
+          el.classList.add('target');
+        } else if(key === todayKey){
+          el.classList.add('today');
+        } else if(cellDate < today){
+          el.classList.add('past');
+        } else {
+          el.classList.add('future');
+        }
+
+        grid.appendChild(el);
+      }
+
+      block.appendChild(grid);
+      container.appendChild(block);
+
+      cursor.setMonth(cursor.getMonth() + 1);
+    }
+  }
+
+  buildCalendar();
+</script>
+</body>
+</html>
